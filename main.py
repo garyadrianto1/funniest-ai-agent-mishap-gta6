@@ -20,14 +20,11 @@ def main() -> int:
         sys.stderr.write("entry line exceeds 240 characters\n")
         return 1
     data = (LINE + "\n").encode("utf-8")
-    here = os.path.dirname(os.path.abspath(__file__))
-    targets = {os.path.join(here, "entry.txt")}
-    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR")
-    if out_dir:
-        targets.add(os.path.join(out_dir, "entry.txt"))
-    for path in sorted(targets):
-        with open(path, "wb") as f:
-            f.write(data)
+    # Write ONLY to the output dir: the grading sandbox mounts the repo
+    # read-only, so a write next to this script exits 1 (fix 2026-11-24).
+    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    with open(os.path.join(out_dir, "entry.txt"), "wb") as f:
+        f.write(data)
     sys.stdout.write(LINE + "\n")
     return 0
 
